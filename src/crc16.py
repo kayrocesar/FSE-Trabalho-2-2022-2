@@ -38,7 +38,7 @@ def CRC16(crc, data):
     ]
     return ((crc & 0xFF00) >> 8) ^ tbl[(crc & 0x00FF) ^ (data & 0x00FF)]
 
-def calcula_CRC(commands, size):
+def calc_CRC(commands, size):
 	crc = 0
 	for i in range(0, size):
 		crc = CRC16(crc, commands[i]);

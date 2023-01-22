@@ -3,71 +3,65 @@ import time
 from uart import *
 from gpio import *
 from pid import *
-from sensorBME280 import amb_temp
+from sensorBME280 import *
+from threading import Thread
+import time
+
+p = None
 
 def exit_handler(signal, frame):
 
    print('\nSignal ' , signal , 'recebido\nEncerrando..........')
+   sendSystemStateSignal(0) 
+   sendFunctioningStateSignal(0)
+   turn_off_res_vent()
+   close_uart()
    exit(1)
 
 # Register our signal handler with `SIGINT`(CTRL + C)
 signal.signal(signal.SIGINT, exit_handler)
  
 
+def start():
 
-
+      init_uart() 
+      initWipi() 
+      init_i2c() 
+      global p
+      p= PID()
+       
 
 
 
 if __name__ == "__main__":
+      start()
      
-      openUart()
-      initWipi()
-      p = PID()
       
+      #sendSystemStateSignal(1) 
+      #sendFunctioningStateSignal(1)
 
       #with open("log", "a+") as f:
       # here, position is already at the end
       #f.write("stuff to append")
 
       while True:
-               time.sleep(2)
-               int_temp = readInternalTemperature()
-               ref_temp = readReferenceTemperature()
-               p.pid_update_ref(int_temp)
-               print(p.reference)
-               control_sig= (p.pid_control(int_temp))
-               print(control_sig)
-               send_sig_control(control_sig)
+               int_temp = readInternalTemperature()    #ler temp interna
+               ref_temp = readReferenceTemperature()   #ler temp de referencia
+               amb_temp=readAmbientTemperature()    #ler temp ambiente do sensor
+               send_ambient_temp(amb_temp)  #enviar temperatura ambiente
 
 
-                ## pid: se negativo -> ventoinha
-               if(control_sig < 0):
-                  print("Iniciando acionamento da ventoinha do forno...")
-                  if control_sig > -40:
-                     control_sig= 40
-                  else:
-                     control_sig=control_sig*(-1)
-                  coolDown(control_sig)
-                  heatUp(0)
-               
-               # pid: se positivo -> resistencia
-               elif(control_sig > 0):
-                  print("Iniciando acionamento da resistencia do forno...")
-                  heatUp(control_sig)
-                  coolDown(0)
-               
-               
-               
+               p.pid_update_ref(ref_temp) #atualizar temp de referencia
 
-               #sendSystemStateSignal(1)
-              # sendFunctioningStateSignal(1)
-         
+               control_sig= (p.pid_control(int_temp)) #receber calculo do pid no sinal de controle
 
-               #print('pid f', pid)
-              # envia_sinal_controle(pid)
-               #d = amb_temp()
-              # print(d)
+               send_sig_control(control_sig) #enviar sinal de controle
+               
+      
+               control_res_vent(control_sig) # controlar acionamento de resistencia e ventoinha
+            
+               
+   
 
    
 
