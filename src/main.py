@@ -5,6 +5,7 @@ from gpio import *
 from pid import *
 from sensorBME280 import *
 from threading import Thread
+from write_log import log_rec
 import time
 
 p = None
@@ -22,29 +23,17 @@ def exit_handler(signal, frame):
 signal.signal(signal.SIGINT, exit_handler)
  
 
-def start():
+def init_all():
 
       init_uart() 
       initWipi() 
       init_i2c() 
       global p
       p= PID()
-       
+   
+    
 
-
-
-if __name__ == "__main__":
-      start()
-     
-      
-      #sendSystemStateSignal(1) 
-      #sendFunctioningStateSignal(1)
-
-      #with open("log", "a+") as f:
-      # here, position is already at the end
-      #f.write("stuff to append")
-
-      while True:
+def temps():
                int_temp = readInternalTemperature()    #ler temp interna
                ref_temp = readReferenceTemperature()   #ler temp de referencia
                amb_temp=readAmbientTemperature()    #ler temp ambiente do sensor
@@ -56,10 +45,30 @@ if __name__ == "__main__":
                control_sig= (p.pid_control(int_temp)) #receber calculo do pid no sinal de controle
 
                send_sig_control(control_sig) #enviar sinal de controle
+
+               log_rec(int_temp,ref_temp,amb_temp) # registrar no log
                
       
-               control_res_vent(control_sig) # controlar acionamento de resistencia e ventoinha
-            
+               control_res_vent(control_sig) # controlar acionamento de resistencia e ventoinha - wiringpi
+
+
+if __name__ == "__main__":
+
+      init_all()
+      
+      while True:
+                  
+                  temps()
+                  #requestUserCommand()
+                  time.sleep(2)
+
+                  
+               
+          
+
+
+               
+               
                
    
 
