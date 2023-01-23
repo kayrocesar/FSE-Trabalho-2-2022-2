@@ -12,7 +12,11 @@ class PID:
     self.erro_anterior = 0.0
     self.sinal_de_controle_MAX = 100.0
     self.sinal_de_controle_MIN = -100.0
-
+  
+  def pid_config_consts(self, Kp_, Ki_, Kd_):
+    self.Kp = Kp_
+    self.Ki = Ki_
+    self.Kd = Kd_
 
   def pid_update_ref(self, referencia_):
     self.referencia = referencia_
