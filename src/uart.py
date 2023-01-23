@@ -20,6 +20,8 @@ def init_uart():
                     print('Porta aberta, conexao realizada com sucesso')
                 else:
                     print('Porta fechada, conexao nao realizada')
+
+                
                 
                     
 def close_uart():
@@ -49,10 +51,15 @@ def receive():
                             return data
                         else:
                             print('CRC16 invalido')
-                            receive()
+                            return None
                     else:
                         print('Mensagem no formato incorreto, tamanho: {}'.format(buffer_tam))
-                        receive()
+                        return None
+
+def send_receive(comando, matricula, value, tamanho):
+        send(comando, matricula, value, tamanho)
+        time.sleep(0.5)
+        return receive()
 
 def readInternalTemperature():
                 command = b'\x01\x23\xc1'
@@ -63,7 +70,7 @@ def readInternalTemperature():
                 if data is not None:
                     temp_Internal = struct.unpack('f', data)[0]
                     print('Temperatura Interna: ', temp_Internal)
-                return temp_Internal
+                    return temp_Internal
 
 
 
@@ -75,35 +82,9 @@ def readReferenceTemperature():
                 if data is not None:
                     temp_Reference = struct.unpack('f', data)[0]
                     print('Temperatura de Referencia: ', temp_Reference)
-                return temp_Reference
+                    return temp_Reference
 
-def requestUserCommand():
-        command = b'\x01\x23\xc3'
-        send(command, matricula, b'', 7)
-        data = receive()
-        #text= data.hex()
-        #print(text)
-        opc = int.from_bytes(data, 'little') ## convertendo para inteiro
-        #print('botao', b) 
-        if opc == 161: #0xa1 em decimal - liga forno
-           print("Ligando forno...Por favor Aguarde...")
-           sendSystemStateSignal(1)
 
-        elif opc == 162: #0xa2 em decimal - Desliga forno
-           print("Desligando forno...Por favor Aguarde..")
-           sendSystemStateSignal(0)
-
-        elif opc == 163: #0xa3 em decimal - Inicia aquecimento
-           print("Iniciando aquecimento...Por favor Aguarde...") 
-           sendFunctioningStateSignal(1)
- 
-
-        elif opc == 164: #0xa4 em decimal - Cancela processo
-            sendFunctioningStateSignal(0)
-            print("Cancelando processo de aquecimento...Por favor Aguarde...") 
-
-        elif opc == 165: #0xa5 em decimal - Alterna temp ref e curva
-           pass
         
 def send_sig_control(pid):
                 command = b'\x01\x23\xd1'
