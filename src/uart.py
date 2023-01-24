@@ -49,9 +49,9 @@ def get_temperature(response):
 
 def send_ref_sig(U, command, reference_signal):
 
-      ref_sig= struct.pack('f', float(reference_signal))
-      crc = Crc16.calc(b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ref_sig,11).to_bytes(2,'little')
-      msg = b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ref_sig+crc
+      
+      crc = Crc16.calc(b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+reference_signal,11).to_bytes(2,'little')
+      msg = b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+reference_signal+crc
       U.write(msg) 
 
 def send_ctrl_sig(U, command, crtl_sig):
@@ -62,6 +62,6 @@ def send_ctrl_sig(U, command, crtl_sig):
 
 def send_ambient_temp(U,temp_amb):
       data_temp = struct.pack('f', temp_amb)
-      crc = crc16.calc(b'\x01'+b'\x16'+b'\xD6'+b'\x07\x04\x02\x06'+data_temp,11).to_bytes(2,'little')
+      crc = Crc16.calc(b'\x01'+b'\x16'+b'\xD6'+b'\x07\x04\x02\x06'+data_temp,11).to_bytes(2,'little')
       msg = b'\x01'+b'\x16'+b'\xD6'+b'\x07\x04\x02\x06'+data_temp+crc
       U.write(msg) 
