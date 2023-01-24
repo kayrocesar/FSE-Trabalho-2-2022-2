@@ -1,5 +1,5 @@
 import serial
-import crc16
+import crc16 as Crc16
 import ver_crc as VER_CRC
 import time
 
@@ -13,7 +13,7 @@ def init_uart():
 
 def req_uart(U,command):
 
-      crc = crc16.calc(b'\x01'+b'\x23'+command+b'\x07\x04\x02\x06',7).to_bytes(2,'little')
+      crc = Crc16.calc(b'\x01'+b'\x23'+command+b'\x07\x04\x02\x06',7).to_bytes(2,'little')
       msg = b'\x01'+b'\x23'+command+b'\x07\x04\x02\x06'+crc
       U.write(msg) 
       response = U.read(9) 
@@ -24,3 +24,19 @@ def req_uart(U,command):
       
       time.sleep(0.5)
       return response
+      
+def send(u, command, value):
+
+      if value == 0:
+            crc = Crc16.calc(b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+b'\x00',8).to_bytes(2,'little')
+            msg = b'\x01'+b'\x16'+command +b'\x07\x04\x02\x06'+ b'\x00'+crc
+      elif value == 1:
+            crc = Crc16.calc(b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ b'\x01',8).to_bytes(2,'little')
+            msg = b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ b'\x01'+crc
+
+      u.write(msg) 
+      resp = u.read(9) 
+
+      if(VER_CRC.verify_crc(resp, resp[-2:], 9) == 'ERRO-CRC'):
+         print('Calculo CRC está errado... Tentando novamente')
+         send(u, command, value)
