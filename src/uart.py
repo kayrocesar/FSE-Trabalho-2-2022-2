@@ -2,6 +2,7 @@ import serial
 import crc16 as Crc16
 import ver_crc as VER_CRC
 import time
+import struct
 
 def init_uart():
       uart0_file= serial.Serial ("/dev/serial0", 9600, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)    
@@ -57,4 +58,10 @@ def send_ctrl_sig(U, command, crtl_sig):
       ctrl_signal_by = crtl_sig.to_bytes(4,'little',signed=True)
       crc = Crc16.calc(b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ctrl_signal_by,11).to_bytes(2,'little')
       msg = b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ctrl_signal_by+crc
+      U.write(msg) 
+
+def send_ambient_temp(U,temp_amb):
+      data_temp = struct.pack('f', temp_amb)
+      crc = crc16.calc(b'\x01'+b'\x16'+b'\xD6'+b'\x07\x04\x02\x06'+data_temp,11).to_bytes(2,'little')
+      msg = b'\x01'+b'\x16'+b'\xD6'+b'\x07\x04\x02\x06'+data_temp+crc
       U.write(msg) 
