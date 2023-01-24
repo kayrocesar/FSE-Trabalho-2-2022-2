@@ -13,7 +13,7 @@ from pid import *
 
 
 control_init = False
-uart0_file = -1
+
 
 
 def exit_handler(signal, frame):
@@ -23,7 +23,7 @@ def exit_handler(signal, frame):
    UART.send(u,b'\xD4', 0)
    UART.send(u,b'\xD5', 0)
    GPIO.turn_off_res_vent()
-   #UART.close_uart()
+   UART.close_uart(u)
    exit(1)
 
 # Register our signal handler with `SIGINT`(CTRL + C)
@@ -99,12 +99,12 @@ if __name__ == "__main__":
 
                         elif dash == '0xa4':
                               control_init = False
-                              print('Cancelando Aquecimento...')
+                              print('Cancelando funcionamento...')
                               UART.send(u,b'\xD5',0)
                               GPIO.turn_off_res_vent
 
                         elif dash == '0xa5':
-                              print('alterna entre o modo de Temperatura de Referência e Curva de Temperatura')
+                              print('Modo de Temperatura de Referência e Curva de Temperatura alternado...')
                               UART.send(u,b'\xD4', 1)
 
                        

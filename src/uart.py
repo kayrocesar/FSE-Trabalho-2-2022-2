@@ -12,6 +12,9 @@ def init_uart():
             print("UART foi inicializada com sucesso!\n")
       return uart0_file
 
+def close_uart(u):
+      u.close()
+
 def req_uart(U,command):
 
       crc = Crc16.calc(b'\x01'+b'\x23'+command+b'\x07\x04\x02\x06',7).to_bytes(2,'little')
