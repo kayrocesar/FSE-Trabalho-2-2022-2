@@ -25,7 +25,7 @@ def req_uart(U,command):
       time.sleep(0.5)
       return response
       
-def send(u, command, value):
+def send(U, command, value):
 
       if value == 0:
             crc = Crc16.calc(b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+b'\x00',8).to_bytes(2,'little')
@@ -34,9 +34,27 @@ def send(u, command, value):
             crc = Crc16.calc(b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ b'\x01',8).to_bytes(2,'little')
             msg = b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ b'\x01'+crc
 
-      u.write(msg) 
-      resp = u.read(9) 
+      U.write(msg) 
+      response = U.read(9) 
 
-      if(VER_CRC.verify_crc(resp, resp[-2:], 9) == 'ERRO-CRC'):
+      if(VER_CRC.verify_crc(response, response[-2:], 9) == 'ERRO-CRC'):
          print('Calculo CRC está errado... Tentando novamente')
-         send(u, command, value)
+         send(U, command, value)
+
+def get_temperature(response):
+        temp_by = response[3:7]
+        temperature_ = struct.unpack('f', temp_by)
+        return temperature_[0]
+
+def send_ref_sig(U, command, reference_signal):
+
+      ref_sig= struct.pack('f', float(reference_signal))
+      crc = Crc16.calc(b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ref_sig,11).to_bytes(2,'little')
+      msg = b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ref_sig+crc
+      U.write(msg) 
+
+def send_ctrl_sig(U, command, crtl_sig):
+      ctrl_signal_by = crtl_sig.to_bytes(4,'little',signed=True)
+      crc = Crc16.calc(b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ctrl_signal_by,11).to_bytes(2,'little')
+      msg = b'\x01'+b'\x16'+command+b'\x07\x04\x02\x06'+ctrl_signal_by+crc
+      U.write(msg) 
