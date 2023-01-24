@@ -26,12 +26,27 @@ python3 main.py
 Acesse o Dashboard da placa raspberry escolhida e inicie a interação com o forno.
 
 ## Gráficos
-### Gráfico ...
+
+
+![Curva ](img/ref40.PNG)
 
 
 
 
-### Grafico ....
+1. [RASP 47] Teste realizado no forno 3 .Temperatura interna se aproxima e se mantém próxima da temperatura de referência que foi aumentada para 40 °C via dashboard.
 
-### Grafico ....
+![](./img/ref40.PNG)
+
+2. [RASP 47]  Temperatura de referência fixada de forma manual em 50 °C, o resistor é acionado para fazer a temperatura interna se aproximar da temperatura de referência.
+
+![](./img/ref50fix.PNG)
+
+3. [RASP 42] Também foi realizado teste no forno 4 . A temperatura de referência foi diminuida para 30 °C via dashboard e com o decorrer do tempo a temperatura interna conseguiu acompanhar via acionamento/desligamento de ventoinha/resistor.
+
+![](./img/ref30.PNG)
+
+
+
+
+
 
