@@ -77,7 +77,7 @@ if __name__ == "__main__":
                         amb_temp_data = BME.init_i2c()
                         UART.send_ambient_temp(u,amb_temp_data)
                         
-                        print('Lendo comandos da dashboard')
+                        print('Lendo comandos do usuario')
             
                         dash = UART.req_uart(u,b'\xC3')
                         dash = str(hex(dash[3]))
