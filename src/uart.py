@@ -1,6 +1,6 @@
 import serial
-import crc16 as Crc16
-import ver_crc as VER_CRC
+import crc.crc16 as Crc16
+import crc.ver_crc as VER_CRC
 import time
 import struct
 

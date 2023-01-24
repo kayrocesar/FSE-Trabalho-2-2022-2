@@ -1,7 +1,7 @@
-import crc16
+import crc.crc16 as Crc16
 
 def verify_crc(resp, crc_resp, size):
-      crc_calc = crc16.calc(resp, size-2).to_bytes(2,'little')
+      crc_calc = Crc16.calc(resp, size-2).to_bytes(2,'little')
       if crc_calc == crc_resp:
             return 'Certo'
       else:

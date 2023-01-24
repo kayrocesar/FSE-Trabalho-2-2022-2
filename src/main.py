@@ -3,11 +3,10 @@ import os
 import time
 import struct
 import uart as UART 
-import gpio as GPIO
-import sensor_amb as BME
+import gpio.gpio as GPIO
+import bme280_sensor.sensor_amb as BME
 import write_log as LOG
 import uart as UART
-import ver_crc as VER_CRC
 from pid import *
 
 
