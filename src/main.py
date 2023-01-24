@@ -15,19 +15,14 @@ control_init = False
 
 
 
-def exit_handler(signal, frame):
 
-   print('\nSignal ' , signal , 'recebido\nEncerrando..........')
-   UART.send(u,b'\xD3', 0)
-   UART.send(u,b'\xD4', 0)
-   UART.send(u,b'\xD5', 0)
-   GPIO.turn_off_res_vent()
-   UART.close_uart(u)
-   exit(1)
 
-# Register our signal handler with `SIGINT`(CTRL + C)
-signal.signal(signal.SIGINT, exit_handler)
-
+def close_all(u):
+       UART.send(u,b'\xD3', 0)
+       UART.send(u,b'\xD4', 0)
+       UART.send(u,b'\xD5', 0)
+       GPIO.turn_off_res_vent()
+       UART.close_uart(u)  
 
 
 def init_states_oven(u,p):
@@ -69,7 +64,7 @@ def init_all():
 
 
 if __name__ == "__main__":
-
+            try:
                   u, p, reference_fix, temp_ref_fix = init_all()
                   
                   while True:
@@ -131,7 +126,9 @@ if __name__ == "__main__":
 
                      
                               GPIO.control_res_vent(ctrl_sig) # controlar acionamento de resistencia e ventoinha - wiringpi
-                              
+            except KeyboardInterrupt:   
+                              close_all(u)
+                                  
              
                  
       
